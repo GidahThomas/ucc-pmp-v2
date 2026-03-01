@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "concurrently -n api,web -c green,blue \"corepack pnpm --filter @ucc/api dev\" \"corepack pnpm --filter @ucc/web dev\"",
-    "build": "corepack pnpm --filter @ucc/shared build && corepack pnpm --filter @ucc/db build && corepack pnpm --filter @ucc/api build && corepack pnpm --filter @ucc/web build",
+    "build": "corepack pnpm --filter @ucc/shared build && corepack pnpm --filter @ucc/db build && corepack pnpm --filter @ucc/api build && corepack pnpm --filter @ucc/web build && node scripts/sync-web-dist.mjs",
     "lint": "corepack pnpm --filter @ucc/shared lint && corepack pnpm --filter @ucc/db lint && corepack pnpm --filter @ucc/api lint && corepack pnpm --filter @ucc/web lint",
     "test": "corepack pnpm --filter @ucc/api test && corepack pnpm --filter @ucc/web test",
     "format": "prettier --write .",
