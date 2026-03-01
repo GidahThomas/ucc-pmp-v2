@@ -36,6 +36,17 @@ API: `http://localhost:4000`
    - `DIRECT_URL` (direct/migrations)
 2. Apply migrations + seed: `pnpm supabase:setup`
 
+## Automatic Migrations (Recommended)
+
+This repo includes a GitHub Actions workflow that runs Prisma migrations automatically when the migration files change.
+
+1. Add GitHub repo secrets:
+   - `DATABASE_URL`
+   - `DIRECT_URL`
+2. Push changes to `main` (or run the workflow manually from the Actions tab).
+
+Note: If `db.<project-ref>.supabase.co:5432` is not reachable from your network (often IPv6-only), use the Supabase **Connection Pooling** connection strings for these secrets.
+
 ## Seeded Logins
 
 - Admin: `admin@ucc-pmp.local` / `Admin@123`

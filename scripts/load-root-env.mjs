@@ -55,7 +55,9 @@ function normalizePostgresUrl(raw) {
 
     const host = url.hostname.toLowerCase();
     const isSupabase = host.endsWith('.supabase.co') || host.endsWith('.supabase.com');
+    const isPooler = host.includes('pooler.supabase.');
     if (isSupabase && !url.searchParams.has('sslmode')) url.searchParams.set('sslmode', 'require');
+    if (isPooler && !url.searchParams.has('pgbouncer')) url.searchParams.set('pgbouncer', 'true');
 
     return url.toString();
   } catch {

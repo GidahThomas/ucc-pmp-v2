@@ -1,0 +1,44 @@
+name: DB Migrate (Prisma)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "packages/db/prisma/**"
+      - "packages/db/package.json"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - "scripts/db-prisma.mjs"
+      - "scripts/load-root-env.mjs"
+
+concurrency:
+  group: prisma-migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.30.3 --activate
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Migrate
+        run: pnpm db:migrate:deploy
+

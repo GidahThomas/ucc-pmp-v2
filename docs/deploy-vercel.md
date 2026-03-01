@@ -38,6 +38,9 @@ Deploy the frontend and API as two Vercel projects from the same repository.
 ## Recommended Production Settings
 
 - Use Supabase Postgres for `DATABASE_URL` and `DIRECT_URL`.
+- If `db.<project-ref>.supabase.co:5432` is not reachable from your network (often IPv6-only), use Supabase **Connection Pooling**:
+  - `DATABASE_URL`: transaction pooler (include `pgbouncer=true`)
+  - `DIRECT_URL`: session pooler
 - Set `STORAGE_MODE=supabase` so uploads are not lost on serverless instances.
 - Keep the API and web on separate Vercel domains or custom subdomains.
 - Set `CORS_ORIGIN` to the final web origin exactly.
