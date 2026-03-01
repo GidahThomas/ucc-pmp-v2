@@ -36,6 +36,8 @@ API: `http://localhost:4000`
    - `DIRECT_URL` (direct/migrations)
 2. Apply migrations + seed: `pnpm supabase:setup`
 
+If you already created the tables manually (for example by running `packages/db/prisma/migrations/0001_initial/migration.sql` in Supabase SQL Editor), run `pnpm db:baseline` once so Prisma can track future migrations.
+
 ## Automatic Migrations (Recommended)
 
 This repo includes a GitHub Actions workflow that runs Prisma migrations automatically when the migration files change.

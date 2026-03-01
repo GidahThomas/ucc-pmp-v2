@@ -20,6 +20,7 @@
     "db:migrate:dev": "node scripts/db-prisma.mjs migrate dev --schema prisma/schema.prisma",
     "db:migrate:deploy": "node scripts/db-prisma.mjs migrate deploy --schema prisma/schema.prisma",
     "db:migrate:status": "node scripts/db-prisma.mjs migrate status --schema prisma/schema.prisma",
+    "db:baseline": "node scripts/db-prisma.mjs migrate resolve --applied 0001_initial --schema prisma/schema.prisma",
     "db:seed": "node scripts/db-seed.mjs",
     "db:setup": "corepack pnpm db:generate && corepack pnpm db:migrate:dev && corepack pnpm db:seed",
     "supabase:setup": "corepack pnpm db:generate && corepack pnpm db:migrate:deploy && corepack pnpm db:seed"
