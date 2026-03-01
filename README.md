@@ -29,6 +29,13 @@ React + Node.js + Prisma rebuild of the original Yii2 property management portal
 Frontend: `http://localhost:5173`
 API: `http://localhost:4000`
 
+## Use Supabase (Cloud)
+
+1. Put your Supabase Postgres connection strings into repo root `.env.local` (recommended) or `.env`:
+   - `DATABASE_URL` (pooled/runtime)
+   - `DIRECT_URL` (direct/migrations)
+2. Apply migrations + seed: `pnpm supabase:setup`
+
 ## Seeded Logins
 
 - Admin: `admin@ucc-pmp.local` / `Admin@123`

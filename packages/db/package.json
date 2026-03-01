@@ -10,9 +10,11 @@
     "prebuild": "node scripts/prisma-generate.cjs",
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "lint": "tsc --noEmit -p tsconfig.json",
-    "prisma:generate": "prisma generate --schema prisma/schema.prisma",
-    "prisma:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:generate": "node ../../scripts/db-prisma.mjs generate --schema prisma/schema.prisma",
+    "prisma:migrate:dev": "node ../../scripts/db-prisma.mjs migrate dev --schema prisma/schema.prisma",
+    "prisma:migrate:deploy": "node ../../scripts/db-prisma.mjs migrate deploy --schema prisma/schema.prisma",
+    "prisma:migrate:status": "node ../../scripts/db-prisma.mjs migrate status --schema prisma/schema.prisma",
+    "prisma:seed": "node ../../scripts/db-seed.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",
