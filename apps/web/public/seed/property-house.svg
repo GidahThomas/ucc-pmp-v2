@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">Masaki Executive House</title>
+  <desc id="desc">Placeholder illustration for the seeded house property.</desc>
+  <rect width="800" height="520" fill="#efe7d3"/>
+  <rect x="120" y="210" width="560" height="220" rx="8" fill="#dcc4a1"/>
+  <polygon points="95,230 400,70 705,230" fill="#9f5c3b"/>
+  <rect x="370" y="295" width="72" height="135" fill="#69432f"/>
+  <rect x="185" y="265" width="90" height="70" fill="#f4efe2"/>
+  <rect x="525" y="265" width="90" height="70" fill="#f4efe2"/>
+  <rect x="170" y="360" width="460" height="18" fill="#b18b5d"/>
+  <text x="400" y="470" font-family="Georgia, serif" font-size="34" text-anchor="middle" fill="#4a3123">
+    Masaki Executive House
+  </text>
+</svg>

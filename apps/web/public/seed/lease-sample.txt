@@ -1,0 +1,5 @@
+Seed lease document placeholder for local development.
+
+Tenant: Amina Kassim
+Property: Masaki Executive House
+Lease Number: LEASE-0001

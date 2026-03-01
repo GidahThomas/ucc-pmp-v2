@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title desc">
+  <title id="title">City Shopfront</title>
+  <desc id="desc">Placeholder illustration for the seeded city shop property.</desc>
+  <rect width="800" height="520" fill="#e5ece7"/>
+  <rect x="110" y="150" width="580" height="265" rx="10" fill="#cdd9cf"/>
+  <rect x="140" y="185" width="520" height="55" fill="#b14f3f"/>
+  <rect x="165" y="270" width="120" height="110" fill="#f8f7f4"/>
+  <rect x="340" y="250" width="120" height="130" fill="#f8f7f4"/>
+  <rect x="515" y="270" width="120" height="110" fill="#f8f7f4"/>
+  <rect x="110" y="405" width="580" height="25" fill="#7a8a7f"/>
+  <text x="400" y="225" font-family="Georgia, serif" font-size="30" text-anchor="middle" fill="#fffaf5">
+    City Shopfront
+  </text>
+  <text x="400" y="470" font-family="Georgia, serif" font-size="34" text-anchor="middle" fill="#30443b">
+    Seeded Retail Listing
+  </text>
+</svg>

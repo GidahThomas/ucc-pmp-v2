@@ -1,0 +1,39 @@
+:root {
+  --sidebar-width: 280px;
+  --sidebar-bg: #120912;
+  --sidebar-color: #ffffff;
+  --sidebar-active: #3b82f6;
+  --page-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --warning: #f59e0b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-primary);
+  background: var(--page-bg);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}

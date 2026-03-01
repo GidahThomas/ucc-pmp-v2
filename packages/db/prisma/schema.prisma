@@ -1,0 +1,336 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  admin
+  manager
+  technician
+  accountant
+  tenant
+}
+
+enum UserStatus {
+  active
+  inactive
+  blocked
+}
+
+model User {
+  id           Int        @id @default(autoincrement()) @map("user_id")
+  uuid         String     @unique @db.VarChar(100)
+  fullName     String     @map("full_name") @db.VarChar(255)
+  email        String     @unique @db.VarChar(255)
+  passwordHash String     @map("password") @db.VarChar(255)
+  phone        String?    @db.VarChar(50)
+  nationalId   String?    @map("national_id") @db.VarChar(100)
+  nationality  String?    @db.VarChar(100)
+  occupation   String?    @db.VarChar(100)
+  role         UserRole   @default(tenant)
+  status       UserStatus @default(active)
+  privileges   String[]   @default([])
+  createdAt    DateTime   @default(now()) @map("created_at")
+  createdById  Int?       @map("created_by")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  updatedById  Int?       @map("updated_by")
+  tenantLeases Lease[]    @relation("LeaseTenant")
+
+  @@map("users")
+}
+
+model Country {
+  id          Int       @id @default(autoincrement()) @map("country_id")
+  uuid        String    @unique @db.VarChar(100)
+  countryName String    @map("country_name") @db.VarChar(255)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdById Int?      @map("created_by")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedById Int?      @map("updated_by")
+  regions     Region[]
+  locations   Location[]
+
+  @@map("country")
+}
+
+model Region {
+  id          Int       @id @default(autoincrement()) @map("region_id")
+  uuid        String    @unique @db.VarChar(100)
+  name        String    @db.VarChar(255)
+  countryId   Int       @map("country_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  createdById Int?      @map("created_by")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedById Int?      @map("updated_by")
+  country     Country   @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  districts   District[]
+  streets     Street[]
+  locations   Location[]
+  wards       Ward[]
+
+  @@map("region")
+}
+
+model District {
+  id           Int       @id @default(autoincrement()) @map("district_id")
+  uuid         String    @unique @db.VarChar(100)
+  regionId     Int       @map("region_id")
+  districtName String    @map("district_name") @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  createdById  Int?      @map("created_by")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  updatedById  Int?      @map("updated_by")
+  region       Region    @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  streets      Street[]
+  locations    Location[]
+  wards        Ward[]
+
+  @@map("district")
+}
+
+model Street {
+  id           Int       @id @default(autoincrement()) @map("street_id")
+  uuid         String    @unique @db.VarChar(100)
+  streetName   String    @map("street_name") @db.VarChar(255)
+  regionId     Int       @map("region_id")
+  districtId   Int       @map("district_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  createdById  Int?      @map("created_by")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  updatedById  Int?      @map("updated_by")
+  region       Region    @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  district     District  @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  locations    Location[]
+  properties   Property[]
+
+  @@map("street")
+}
+
+model Ward {
+  id           Int      @id @default(autoincrement()) @map("ward_id")
+  uuid         String   @unique @db.VarChar(100)
+  wardName     String   @map("ward_name") @db.VarChar(255)
+  regionId     Int      @map("region_id")
+  districtId   Int      @map("district_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  createdById  Int?     @map("created_by")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  updatedById  Int?     @map("updated_by")
+  region       Region   @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  district     District @relation(fields: [districtId], references: [id], onDelete: Restrict)
+
+  @@map("ward")
+}
+
+model Location {
+  id            Int                @id @default(autoincrement())
+  uuid          String             @unique @db.VarChar(100)
+  countryId     Int                @map("country_id")
+  districtId    Int                @map("district_id")
+  regionId      Int                @map("region_id")
+  streetId      Int                @map("street_id")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  createdById   Int?               @map("created_by")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  updatedById   Int?               @map("updated_by")
+  country       Country            @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  district      District           @relation(fields: [districtId], references: [id], onDelete: Restrict)
+  region        Region             @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  street        Street             @relation(fields: [streetId], references: [id], onDelete: Restrict)
+  propertyLinks PropertyLocation[]
+
+  @@map("location")
+}
+
+model PropertyLocation {
+  id         Int         @id @default(autoincrement())
+  locationId Int?        @map("location_id")
+  propertyId Int?        @map("property_id")
+  statusId   Int?        @map("status_id")
+  location   Location?   @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  property   Property?   @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  status     ListSource? @relation("PropertyLocationStatus", fields: [statusId], references: [id], onDelete: SetNull)
+
+  @@map("property_location")
+}
+
+model ListSource {
+  id                      Int                       @id @default(autoincrement())
+  uuid                    String                    @unique @db.VarChar(100)
+  listName                String                    @map("list_Name") @db.VarChar(255)
+  code                    String                    @db.VarChar(255)
+  category                String                    @db.VarChar(100)
+  sortBy                  String?                   @map("sort_by") @db.VarChar(255)
+  description             String?
+  parentId                Int?                      @map("parent_id")
+  createdAt               DateTime                  @default(now()) @map("created_at")
+  createdById             Int?                      @map("created_by")
+  updatedAt               DateTime                  @updatedAt @map("updated_at")
+  updatedById             Int?                      @map("updated_by")
+  parent                  ListSource?               @relation("ListSourceHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children                ListSource[]              @relation("ListSourceHierarchy")
+  propertyLocationStatuses PropertyLocation[]       @relation("PropertyLocationStatus")
+  propertyTypes           Property[]                @relation("PropertyType")
+  propertyStatuses        Property[]                @relation("PropertyStatus")
+  propertyOwnerships      Property[]                @relation("PropertyOwnership")
+  propertyUsages          Property[]                @relation("PropertyUsage")
+  priceTypes              PropertyPrice[]           @relation("PropertyPriceType")
+  attributeDataTypes      PropertyAttribute[]       @relation("PropertyAttributeDataType")
+  attributePropertyTypes  PropertyAttribute[]       @relation("PropertyAttributePropertyType")
+  attributeAnswers        PropertyAttributeAnswer[] @relation("PropertyAttributeAnswerValue")
+  leaseStatuses           Lease[]                   @relation("LeaseStatus")
+  billStatuses            Bill[]                    @relation("BillStatus")
+
+  @@map("list_source")
+}
+
+model Property {
+  id                Int                 @id @default(autoincrement())
+  uuid              String              @unique @db.VarChar(100)
+  propertyName      String              @map("property_name") @db.VarChar(255)
+  propertyTypeId    Int                 @map("property_type_id")
+  description       String?
+  identifierCode    String              @unique @map("identifier_code") @db.VarChar(200)
+  streetId          Int?                @map("street_id")
+  propertyStatusId  Int                 @map("property_status_id")
+  documentUrl       String?             @map("document_url")
+  ownershipTypeId   Int                 @map("ownership_type_id")
+  usageTypeId       Int                 @map("usage_type_id")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  createdById       Int?                @map("created_by")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  updatedById       Int?                @map("updated_by")
+  propertyType      ListSource          @relation("PropertyType", fields: [propertyTypeId], references: [id], onDelete: Restrict)
+  propertyStatus    ListSource          @relation("PropertyStatus", fields: [propertyStatusId], references: [id], onDelete: Restrict)
+  propertyOwnership ListSource          @relation("PropertyOwnership", fields: [ownershipTypeId], references: [id], onDelete: Restrict)
+  usageType         ListSource          @relation("PropertyUsage", fields: [usageTypeId], references: [id], onDelete: Restrict)
+  street            Street?             @relation(fields: [streetId], references: [id], onDelete: SetNull)
+  prices            PropertyPrice[]
+  extraData         PropertyExtraData[]
+  leases            Lease[]
+  propertyLocations PropertyLocation[]
+
+  @@map("property")
+}
+
+model PropertyPrice {
+  id             Int       @id @default(autoincrement())
+  uuid           String    @unique @db.VarChar(100)
+  unitAmount     Decimal   @map("unit_amount") @db.Decimal(18, 2)
+  period         String?   @db.VarChar(50)
+  minMonthlyRent Decimal?  @map("min_monthly_rent") @db.Decimal(18, 2)
+  maxMonthlyRent Decimal?  @map("max_monthly_rent") @db.Decimal(18, 2)
+  propertyId     Int       @map("property_id")
+  priceTypeId    Int       @map("price_type")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  createdById    Int?      @map("created_by")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  updatedById    Int?      @map("updated_by")
+  property       Property  @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  priceType      ListSource @relation("PropertyPriceType", fields: [priceTypeId], references: [id], onDelete: Restrict)
+  leases         Lease[]
+
+  @@map("property_price")
+}
+
+model PropertyAttribute {
+  id                  Int                      @id @default(autoincrement())
+  uuid                String                   @unique @db.VarChar(100)
+  attributeName       String                   @map("attribute_name") @db.VarChar(255)
+  attributeDataTypeId Int                      @map("attribute_name_dataType_id")
+  propertyTypeId      Int?                     @map("property_type_id")
+  createdAt           DateTime                 @default(now()) @map("created_at")
+  createdById         Int?                     @map("created_by")
+  updatedAt           DateTime                 @updatedAt @map("updated_at")
+  updatedById         Int?                     @map("updated_by")
+  dataType            ListSource               @relation("PropertyAttributeDataType", fields: [attributeDataTypeId], references: [id], onDelete: Restrict)
+  propertyType        ListSource?              @relation("PropertyAttributePropertyType", fields: [propertyTypeId], references: [id], onDelete: SetNull)
+  answers             PropertyAttributeAnswer[]
+  extraData           PropertyExtraData[]
+
+  @@map("property_attribute")
+}
+
+model PropertyAttributeAnswer {
+  id                  Int                @id @default(autoincrement())
+  uuid                String             @unique @db.VarChar(100)
+  propertyAttributeId Int                @map("property_attribute_id")
+  answerId            Int                @map("answer_id")
+  status              String?            @db.VarChar(50)
+  createdAt           DateTime           @default(now()) @map("created_at")
+  createdById         Int?               @map("created_by")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  updatedById         Int?               @map("updated_by")
+  propertyAttribute   PropertyAttribute  @relation(fields: [propertyAttributeId], references: [id], onDelete: Cascade)
+  answer              ListSource         @relation("PropertyAttributeAnswerValue", fields: [answerId], references: [id], onDelete: Restrict)
+  propertyExtraData   PropertyExtraData[]
+
+  @@map("property_attribute_answer")
+}
+
+model PropertyExtraData {
+  id                  Int                      @id @default(autoincrement())
+  uuid                String                   @unique @db.VarChar(100)
+  propertyId          Int                      @map("property_id")
+  propertyAttributeId Int                      @map("property_attribute_id")
+  attributeAnswerId   Int?                     @map("attribute_answer_id")
+  attributeAnswerText String?                  @map("attribute_answer_text")
+  createdAt           DateTime                 @default(now()) @map("created_at")
+  createdById         Int?                     @map("created_by")
+  updatedAt           DateTime                 @updatedAt @map("updated_at")
+  updatedById         Int?                     @map("updated_by")
+  property            Property                 @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyAttribute   PropertyAttribute        @relation(fields: [propertyAttributeId], references: [id], onDelete: Restrict)
+  attributeAnswer     PropertyAttributeAnswer? @relation(fields: [attributeAnswerId], references: [id], onDelete: SetNull)
+
+  @@map("property_extra_data")
+}
+
+model Lease {
+  id              Int           @id @default(autoincrement())
+  uuid            String        @unique @db.VarChar(100)
+  leaseNumber     String?       @unique @map("lease_number") @db.VarChar(100)
+  propertyId      Int           @map("property_id")
+  tenantId        Int           @map("tenant_id")
+  propertyPriceId Int           @map("property_price_id")
+  leaseDocUrl     String?       @map("lease_doc_url") @db.VarChar(255)
+  statusId        Int           @map("status")
+  leaseStartDate  DateTime      @map("lease_start_date") @db.Date
+  leaseEndDate    DateTime      @map("lease_end_date") @db.Date
+  durationMonths  Int           @default(1) @map("duration_months")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  createdById     Int?          @map("created_by")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  updatedById     Int?          @map("updated_by")
+  property        Property      @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  tenant          User          @relation("LeaseTenant", fields: [tenantId], references: [id], onDelete: Restrict)
+  propertyPrice   PropertyPrice @relation(fields: [propertyPriceId], references: [id], onDelete: Restrict)
+  status          ListSource    @relation("LeaseStatus", fields: [statusId], references: [id], onDelete: Restrict)
+  bills           Bill[]
+
+  @@map("lease")
+}
+
+model Bill {
+  id           Int         @id @default(autoincrement())
+  uuid         String      @unique @db.VarChar(100)
+  leaseId      Int         @map("lease_id")
+  amount       Decimal     @db.Decimal(18, 2)
+  dueDate      DateTime    @map("due_date") @db.Date
+  paidDate     DateTime?   @map("paid_date") @db.Date
+  billStatusId Int?        @map("bill_status")
+  receiptUrl   String?     @map("receipt_url")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  createdById  Int?        @map("created_by")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  updatedById  Int?        @map("updated_by")
+  lease        Lease       @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  billStatus   ListSource? @relation("BillStatus", fields: [billStatusId], references: [id], onDelete: SetNull)
+
+  @@map("bill")
+}
