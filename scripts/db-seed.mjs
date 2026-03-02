@@ -15,6 +15,10 @@ if (!process.env.DIRECT_URL || process.env.DIRECT_URL.trim() === '') {
   process.env.DIRECT_URL = process.env.DATABASE_URL;
 }
 
+// Seed scripts should use the migration connection (DIRECT_URL) instead of the pooled runtime URL.
+// This avoids common PgBouncer transaction-pooling limitations during scripted writes.
+process.env.DATABASE_URL = process.env.DIRECT_URL;
+
 const result = spawnSync('tsx', ['prisma/seed.ts'], {
   cwd: dbPackageDir,
   stdio: 'inherit',
@@ -26,4 +30,3 @@ if (result.error) {
 }
 
 process.exit(result.status ?? 1);
-
